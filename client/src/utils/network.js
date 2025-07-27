@@ -2,11 +2,14 @@ export const POLYGON_AMOY_CONFIG = {
   chainId: '0x13882', // 80002 in hex
   chainName: 'Polygon Amoy Testnet',
   nativeCurrency: {
-    name: 'MATIC',
-    symbol: 'MATIC',
+    name: 'POL',
+    symbol: 'POL',
     decimals: 18,
   },
-  rpcUrls: ['https://rpc-amoy.polygon.technology/'],
+  rpcUrls: [
+    'https://rpc-amoy.polygon.technology/',
+    'https://polygon-amoy-bor-rpc.publicnode.com'
+  ],
   blockExplorerUrls: ['https://amoy.polygonscan.com/'],
 };
 

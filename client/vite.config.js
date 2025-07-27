@@ -9,7 +9,7 @@ export default defineConfig({
   },
   build: {
     rollupOptions: {
-      external: [], // Keep empty - don't externalize ethers
+      external: [],
       output: {
         globals: {}
       }

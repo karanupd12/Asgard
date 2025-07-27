@@ -16,42 +16,47 @@ function App() {
   const [provider, setProvider] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [networkSwitching, setNetworkSwitching] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const loadProvider = async () => {
       if (typeof window.ethereum !== 'undefined') {
         try {
           setNetworkSwitching(true);
+          setError("");
 
-          // CHECK AND SWITCH NETWORK FIRST
+          // Use ethers v5 syntax for better Vite compatibility
+          const provider = new ethers.providers.Web3Provider(window.ethereum);
+          await provider.send("eth_requestAccounts", []);
+
+          // Check and switch network if needed
           const isCorrectNetwork = await checkNetwork();
           if (!isCorrectNetwork) {
             console.log("Wrong network detected, switching to Polygon Amoy...");
             const switched = await switchToPolygonAmoy();
             if (!switched) {
-              alert('Please switch to Polygon Amoy testnet to use Asgard');
+              setError('Please switch to Polygon Amoy testnet to use Asgard');
               setNetworkSwitching(false);
               return;
             }
+            // Wait a bit after network switch
+            await new Promise(resolve => setTimeout(resolve, 1000));
           }
 
-          const provider = new ethers.BrowserProvider(window.ethereum);
-
-          // Check network to avoid ENS issues
+          // Verify network after any switches
           const network = await provider.getNetwork();
           console.log("Connected to network:", network.name, "Chain ID:", network.chainId);
 
-          // Verify we're on Polygon Amoy
-          if (network.chainId !== 80002n) {
-            alert('Please ensure you are on Polygon Amoy testnet (Chain ID: 80002)');
+          if (network.chainId !== 80002) {
+            setError('Please ensure you are on Polygon Amoy testnet (Chain ID: 80002)');
             setNetworkSwitching(false);
             return;
           }
 
-          // Set up network change listeners
+          // Set up event listeners
           window.ethereum.on("chainChanged", async (chainId) => {
             console.log("Network changed to:", chainId);
-            if (chainId !== '0x13882') { // Not Polygon Amoy
+            if (chainId !== '0x13882') {
               console.log("Wrong network, switching back to Polygon Amoy...");
               await switchToPolygonAmoy();
             }
@@ -62,16 +67,22 @@ function App() {
             window.location.reload();
           });
 
-          await provider.send("eth_requestAccounts", []);
-          const signer = await provider.getSigner();
+          // Get signer and address
+          const signer = provider.getSigner();
           const address = await signer.getAddress();
           setAccount(address);
 
+          // Contract setup
           let contractAddress = import.meta.env.VITE_CONTRACT_ADDRESS;
           
-          // Validate address format to prevent ENS errors
+          if (!contractAddress) {
+            setError("Contract address not configured. Please check environment variables.");
+            setNetworkSwitching(false);
+            return;
+          }
+          
           if (!/^0x[a-fA-F0-9]{40}$/.test(contractAddress)) {
-            console.error("Invalid contract address format. Please use 0x... format, not ENS names.");
+            setError("Invalid contract address format. Please use 0x... format, not ENS names.");
             setNetworkSwitching(false);
             return;
           }
@@ -88,10 +99,11 @@ function App() {
           
         } catch (error) {
           console.error("Error connecting to wallet:", error);
+          setError(`Wallet connection failed: ${error.message}`);
           setNetworkSwitching(false);
         }
       } else {
-        alert("MetaMask is not installed. Please install MetaMask to use Asgard.");
+        setError("MetaMask is not installed. Please install MetaMask to use Asgard.");
         setNetworkSwitching(false);
       }
     };
@@ -117,6 +129,35 @@ function App() {
             <p className="text-gray-600 text-sm">
               Please approve the network switch in MetaMask to continue using Asgard
             </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error screen if there's an error
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="bg-white rounded-2xl p-8 shadow-xl max-w-md w-full mx-4">
+          <div className="text-center">
+            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-8 h-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <h2 className="text-xl font-semibold text-gray-900 mb-2">
+              Connection Error
+            </h2>
+            <p className="text-gray-600 text-sm mb-4">
+              {error}
+            </p>
+            <button 
+              onClick={() => window.location.reload()}
+              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              Try Again
+            </button>
           </div>
         </div>
       </div>
@@ -221,7 +262,7 @@ function App() {
   return (
     <Router>
       <div className="min-h-screen bg-[#343c47] text-[#EEEEEE]">
-        <Header account={account} />
+        <Header />
         
         <Routes>
           <Route path="/" element={<DashboardContent />} />

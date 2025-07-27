@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
 
-const Header = ({ account }) => {
+const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const toggleMobileMenu = () => {
@@ -42,16 +42,11 @@ const Header = ({ account }) => {
               Explore
             </Link>
             
-            {account ? (
-              <div className="bg-green-100 px-3 py-1.5 rounded-lg border border-green-400">
-                <span className="text-xs text-green-600 font-medium">Connected</span>
-                <p className="text-xs font-mono text-gray-900">{account.slice(0, 6)}...{account.slice(-4)}</p>
-              </div>
-            ) : (
-              <button className="bg-white rounded-lg px-4 py-2 text-gray-900 text-sm font-medium hover:bg-gray-100 transition-colors cursor-pointer">
-                Connect Wallet
-              </button>
-            )}
+            {/* Network Status Badge */}
+            <div className="bg-purple-100 px-3 py-1.5 rounded-lg border border-purple-400">
+              <span className="text-xs text-purple-600 font-medium">Polygon Amoy</span>
+              <p className="text-xs text-gray-700">Testnet Ready</p>
+            </div>
           </div>
 
           {/* Mobile Menu Button */}
@@ -102,25 +97,14 @@ const Header = ({ account }) => {
               </div>
             </Link>
             
-            {/* Mobile Account Status */}
-            {account ? (
-              <div className="bg-green-100 px-4 py-3 rounded-lg border border-green-400">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-green-600 font-medium">Connected</span>
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                </div>
-                <p className="text-sm font-mono text-gray-900 mt-1 break-all">{account}</p>
+            {/* Mobile Network Status */}
+            <div className="bg-purple-100 px-4 py-3 rounded-lg border border-purple-400">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-purple-600 font-medium">Polygon Amoy</span>
+                <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
               </div>
-            ) : (
-              <button className="w-full bg-white rounded-lg px-4 py-3 text-gray-900 text-sm font-medium hover:bg-gray-100 transition-colors cursor-pointer text-left">
-                <div className="flex items-center space-x-2">
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                  </svg>
-                  <span>Connect Wallet</span>
-                </div>
-              </button>
-            )}
+              <p className="text-sm text-gray-700 mt-1">Testnet Ready</p>
+            </div>
           </div>
         </div>
       </div>
