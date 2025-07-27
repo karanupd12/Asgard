@@ -7,4 +7,20 @@ export default defineConfig({
   define: {
     global: 'globalThis',
   },
+  build: {
+    rollupOptions: {
+      external: [], // Keep empty - don't externalize ethers
+      output: {
+        globals: {}
+      }
+    }
+  },
+  optimizeDeps: {
+    include: ['ethers']
+  },
+  resolve: {
+    alias: {
+      // Add any aliases if needed
+    }
+  }
 })
