@@ -43,10 +43,14 @@ Asgard revolutionizes digital asset storage by combining cutting-edge blockchain
 | Metric | Value | Industry Standard |
 |--------|-------|------------------|
 | **Transaction Speed** | 2.1 seconds | ~15 seconds (Ethereum) |
-| **Upload Cost** | $0.001 USD | $5-50 USD (Ethereum) |
+| **Upload Cost** | $0.59 (Free) | $5-50 USD (Ethereum) |
 | **File Retrieval** | <300ms | ~1-2 seconds |
 | **Smart Contract Gas** | ~80,000 units | ~200,000+ typical |
 | **Platform Uptime** | 99.9% | 99.5% target |
+
+## System Architecture
+
+<img src="image.png" alt="SS" width="100%" />
 
 ## 📚 Learn More About Web3
 
