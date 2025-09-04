@@ -1,0 +1,104 @@
+.top {
+  max-width: 500px;
+  margin: 20px auto;
+  padding: 30px;
+  background: #393E46;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(0, 173, 181, 0.2);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Custom file upload button */
+.choose {
+  display: block;
+  background: #00ADB5;
+  color: #EEEEEE;
+  padding: 15px 25px;
+  border-radius: 8px;
+  text-align: center;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  border: none;
+  user-select: none;
+}
+
+.choose:hover {
+  background: #008a91;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 173, 181, 0.3);
+}
+
+/* Hide default file input */
+#file-upload {
+  display: none;
+}
+
+/* File name display */
+.textArea {
+  padding: 15px;
+  background: #222831;
+  border: 1px solid rgba(0, 173, 181, 0.3);
+  border-radius: 8px;
+  font-size: 14px;
+  color: #EEEEEE;
+  text-align: center;
+  font-style: italic;
+}
+
+/* Upload button - IMPORTANT: Higher specificity */
+.form .upload {
+  background: #28a745 !important;
+  color: #EEEEEE !important;
+  border: none !important;
+  padding: 15px 25px !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  border-radius: 8px !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+  text-align: center !important;
+}
+
+.form .upload:hover:not(:disabled) {
+  background: #218838 !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3) !important;
+}
+
+.form .upload:disabled {
+  background: #393E46 !important;
+  color: rgba(238, 238, 238, 0.5) !important;
+  cursor: not-allowed !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* Disabled file input styling */
+input:disabled + .choose {
+  background: #393E46;
+  color: rgba(238, 238, 238, 0.5);
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Mobile responsive */
+@media (max-width: 600px) {
+  .top {
+    margin: 10px;
+    padding: 20px;
+  }
+  
+  .choose,
+  .form .upload {
+    padding: 12px 20px !important;
+    font-size: 14px !important;
+  }
+}

@@ -1,0 +1,104 @@
+.App {
+  position: relative;
+  min-height: 100vh;
+  padding: 40px 20px 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+  font-family: 'Inter', sans-serif;
+  background: #222831;
+  color: #EEEEEE;
+  overflow-x: hidden;
+}
+
+.App h1 {
+  margin: 0;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #EEEEEE;
+  text-align: center;
+  letter-spacing: -0.02em;
+}
+
+.App p {
+  margin: 0;
+  font-size: 1rem;
+  color: rgba(238, 238, 238, 0.85);
+  text-align: center;
+}
+
+/* Share Button - Fixed positioning */
+.share {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  background: #00ADB5;
+  color: #EEEEEE;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 173, 181, 0.3);
+}
+
+.share:hover:not(:disabled) {
+  background: #008a91;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 173, 181, 0.4);
+}
+
+.share:disabled {
+  background: #393E46;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Animated Background */
+.bg, .bg2, .bg3 {
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(60deg, #00ADB5, #393E46, #00ADB5);
+  opacity: 0.05;
+  border-radius: 50%;
+  animation: spin 20s linear infinite;
+}
+
+.bg2 {
+  animation-duration: 30s;
+  animation-direction: reverse;
+  opacity: 0.03;
+}
+
+.bg3 {
+  animation-duration: 40s;
+  opacity: 0.02;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .App {
+    padding: 30px 15px 60px;
+  }
+  
+  .App h1 {
+    font-size: 2rem;
+  }
+  
+  .share {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+}
