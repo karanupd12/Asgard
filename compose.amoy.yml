@@ -1,0 +1,26 @@
+# Polygon Amoy + Pinata override.
+#   1. cp .env.example .env  and fill CONTRACT_ADDRESS, START_BLOCK, PINATA_JWT, JWT_SECRET
+#   2. docker compose -f docker-compose.yml -f compose.amoy.yml up --build api indexer web postgres
+# (deploy the contract first with `pnpm --filter @asgard/contracts deploy:amoy`)
+
+services:
+  api:
+    environment: &amoy-env
+      RPC_URL: ${AMOY_RPC_URL:-https://rpc-amoy.polygon.technology/}
+      CHAIN_ID: "80002"
+      DEPLOYMENT_FILE: ""
+      CONTRACT_ADDRESS: ${CONTRACT_ADDRESS:?set CONTRACT_ADDRESS in .env}
+      START_BLOCK: ${START_BLOCK:?set START_BLOCK in .env}
+      CONFIRMATIONS: "5"
+      INDEXER_BATCH: "500"
+      INDEXER_INTERVAL_MS: "2000" # ~Polygon block time
+      STORAGE_PROVIDER: pinata
+      PINATA_JWT: ${PINATA_JWT:?set PINATA_JWT in .env}
+      GATEWAY_URL: ${GATEWAY_URL:-https://gateway.pinata.cloud/ipfs/}
+      JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET in .env}
+    depends_on: !override
+      postgres: { condition: service_healthy }
+  indexer:
+    environment: *amoy-env
+    depends_on: !override
+      postgres: { condition: service_healthy }

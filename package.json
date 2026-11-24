@@ -1,10 +1,24 @@
 {
-  "name": "hardhat-project",
-  "devDependencies": {
-    "@nomicfoundation/hardhat-toolbox": "^6.1.0",
-    "hardhat": "^2.26.1"
+  "name": "asgard",
+  "private": true,
+  "packageManager": "pnpm@9.15.0",
+  "engines": {
+    "node": ">=20"
   },
-  "dependencies": {
-    "dotenv": "^17.2.1"
+  "scripts": {
+    "up": "docker compose up --build -d",
+    "down": "docker compose down",
+    "dev:web": "pnpm --filter @asgard/web dev",
+    "build": "pnpm --filter @asgard/web build",
+    "test": "pnpm --filter @asgard/contracts test",
+    "e2e": "pnpm --filter @asgard/bench e2e",
+    "seed": "pnpm --filter @asgard/bench seed",
+    "bench": "pnpm --filter @asgard/contracts gas && pnpm --filter @asgard/bench cost && pnpm --filter @asgard/bench latency && pnpm --filter @asgard/bench load && pnpm --filter @asgard/bench lighthouse && pnpm --filter @asgard/bench report",
+    "screenshots": "pnpm --filter @asgard/bench screenshots",
+    "diagram": "pnpm --filter @asgard/bench export-diagram",
+    "format": "prettier --write ."
+  },
+  "devDependencies": {
+    "prettier": "^3.3.3"
   }
 }

@@ -1,17 +1,33 @@
+# Dependencies
 node_modules
+
+# Env
 .env
+.env.*
+!.env.example
 
-# Hardhat files
-/cache
-/artifacts
+# Private notes (not tracked)
+CLAUDE.md
+Documentation.md
+asgard.tex
 
-# TypeChain files
-/typechain
-/typechain-types
+# Build output
+dist
+build
+apps/api/bin
 
-# solidity-coverage files
-/coverage
-/coverage.json
+# Hardhat
+packages/contracts/cache
+packages/contracts/artifacts
+packages/contracts/typechain-types
+packages/contracts/coverage
+packages/contracts/coverage.json
+packages/contracts/ignition/deployments/chain-31337
+packages/contracts/gas-report.txt
 
-# Hardhat Ignition default folder for deployments against a local node
-ignition/deployments/chain-31337
+# Benchmarks raw output
+bench/out
+
+# OS / editor
+.DS_Store
+Thumbs.db

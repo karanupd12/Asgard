@@ -1,0 +1,100 @@
+# Asgard — full local stack. `docker compose up --build`, then open http://localhost:3000
+# Zero external keys: local EVM chain (Anvil), local IPFS (Kubo), Postgres.
+# For Polygon Amoy + Pinata, see compose.amoy.yml.
+
+name: asgard
+
+x-backend-env: &backend-env
+  DATABASE_URL: postgres://asgard:asgard@postgres:5432/asgard?sslmode=disable
+  RPC_URL: http://chain:8545
+  DEPLOYMENT_FILE: /deployments/31337.json
+  CONFIRMATIONS: "0"
+  INDEXER_INTERVAL_MS: "250" # local blocks are instant; eth_blockNumber polling is cheap
+  STORAGE_PROVIDER: kubo
+  KUBO_API_URL: http://ipfs:5001
+  GATEWAY_URL: /ipfs/
+  JWT_SECRET: ${JWT_SECRET:-local-dev-only-secret-change-me-0123456789}
+  MAX_UPLOAD_MB: "25"
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: asgard
+      POSTGRES_PASSWORD: asgard
+      POSTGRES_DB: asgard
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U asgard -d asgard"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  ipfs:
+    image: ipfs/kubo:v0.32.1
+    volumes: [ipfsdata:/data/ipfs]
+    healthcheck:
+      test: ["CMD-SHELL", "ipfs --api=/ip4/127.0.0.1/tcp/5001 id >/dev/null"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  chain:
+    image: ghcr.io/foundry-rs/foundry:v1.0.0
+    user: root
+    # Anvil with persisted state, so restarts keep your contract + files.
+    entrypoint: ["anvil"]
+    command: ["--host", "0.0.0.0", "--chain-id", "31337", "--state", "/data/state.json", "--state-interval", "5"]
+    volumes: [chaindata:/data]
+    healthcheck:
+      test: ["CMD", "cast", "block-number", "--rpc-url", "http://127.0.0.1:8545"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  deployer:
+    build: { context: ., dockerfile: packages/contracts/Dockerfile }
+    environment:
+      LOCAL_RPC_URL: http://chain:8545
+      DEPLOYMENT_OUT: /deployments/31337.json
+    volumes: [deployments:/deployments]
+    depends_on:
+      chain: { condition: service_healthy }
+    restart: "no"
+
+  api:
+    build: { context: apps/api }
+    environment: *backend-env
+    volumes: [deployments:/deployments:ro]
+    depends_on: &backend-deps
+      postgres: { condition: service_healthy }
+      ipfs: { condition: service_healthy }
+      chain: { condition: service_healthy }
+      deployer: { condition: service_completed_successfully }
+    healthcheck:
+      test: ["CMD", "/usr/local/bin/api", "healthcheck"]
+      interval: 5s
+      timeout: 4s
+      retries: 20
+    restart: unless-stopped
+
+  indexer:
+    build: { context: apps/api }
+    entrypoint: ["/usr/local/bin/indexer"]
+    environment: *backend-env
+    volumes: [deployments:/deployments:ro]
+    depends_on: *backend-deps
+    restart: unless-stopped
+
+  web:
+    build: { context: ., dockerfile: apps/web/Dockerfile }
+    ports: ["${WEB_PORT:-3000}:80"]
+    depends_on:
+      api: { condition: service_healthy }
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+  ipfsdata:
+  chaindata:
+  deployments:
